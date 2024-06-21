@@ -6,7 +6,7 @@ APP = ['SexyMath.py']
 # Options for cx_Freeze
 OPTIONS = {
     'build_exe': {
-        'packages': ['pygame', 'math', 'numpy', 'time'],
+        'packages': ['pygame', 'math', 'numpy', 'time', 'sys'],
         'include_files': ['MyFirstApp.ico'],
         'include_msvcr': True,  # Include Microsoft Visual C++ Redistributable
     }
