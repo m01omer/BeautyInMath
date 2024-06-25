@@ -18,7 +18,7 @@ def draw_epicycloid(screen, width, height):
     pointsII = []
     pointsIII = []
 
-    angle = np.arange(0, 1000, 0.01)
+    angle = np.arange(0, 800, 0.01)
 
     newShape = 13
     AngleShift = 0.3
