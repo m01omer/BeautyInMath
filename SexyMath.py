@@ -338,7 +338,7 @@ def The6Spikes(center_x, center_y, x, y, XArray, YArray):
         
     return (XArray, YArray)
 
-def draw_particles(screen, width, height, particle_size, background_color, particle_color, total_particles):
+def BrownianSnowflake(screen, width, height, particle_size, background_color, particle_color, total_particles):
 
     centerX = width // 2
     centerY = height // 2
@@ -455,7 +455,7 @@ def main():
     particle_color = (67, 215, 172)
     total_particles = 450
 
-    draw_particles(screen, width, height, particle_size, background_color, particle_color, total_particles)
+    BrownianSnowflake(screen, width, height, particle_size, background_color, particle_color, total_particles)
 
     pygame.quit()
     sys.exit()
