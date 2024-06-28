@@ -304,6 +304,129 @@ def koch_snowflake(screen,TimeLimit, InitialLength, TotalIterations, Massage ):
         if (end_time - start_time) >= TimeLimit:
             running = False
 
+# -------------------Brownian Tree ------------------------------------
+def InRange(x, y, XArray, YArray):
+    # Convert XArray and YArray into a set of coordinate tuples for faster lookups
+    points_set = set(zip(XArray, YArray))
+    
+    # Parameter 1 Distance 
+    movement = [  (0,5), (0,-5), (-5,0), (5,0), 
+                 (0,4), (0,-4), (-4,0), (4,0), (0,3), (0,-3), (-3,0), (3,0), 
+                 (0,2), (0,-2), (-2,0), (2,0), (0,1), (0,-1), (-1,0), (1,0) ]
+    
+    for move in movement:
+        NewX = x + move[0]
+        NewY = y + move[1]
+        if (NewX, NewY) in points_set:
+            return True
+        
+    return False
+
+def The6Spikes(center_x, center_y, x, y, XArray, YArray):
+
+    radius = np.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
+    initial_angle = np.arctan2(y - center_y, x - center_x)
+    
+    for i in range(1,6):
+        angle = initial_angle + (i * (np.pi / 3))
+        
+        new_x = center_x + (radius * np.cos(angle))
+        new_y = center_y + (radius * np.sin(angle))
+        
+        XArray.append(new_x)
+        YArray.append(new_y)
+        
+    return (XArray, YArray)
+
+def draw_particles(screen, width, height, particle_size, background_color, particle_color, total_particles):
+
+    centerX = width // 2
+    centerY = height // 2
+    TotalParticles = total_particles
+
+    screen = pygame.display.set_mode((width, height))
+    clock = pygame.time.Clock()
+
+    XArray = [centerX]
+    YArray = [centerY]
+
+    screen.fill(background_color)
+
+    running = True
+    for i in range(TotalParticles):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        
+        if not running:
+            break
+
+        x = width 
+        y =  np.random.randint(height // 3, height)
+        theta = np.arctan2(y - centerY, x - centerX)
+        
+        # Parameter 2 starting point Position 
+        while not (0 < theta < 0.3):
+            y =  np.random.randint(height // 3, height)
+            theta = np.arctan2(y - centerY, x - centerX)
+    
+        while not InRange(x, y, XArray, YArray)  :
+            if x - 1 > centerX and x - 2 > centerX:
+                x -= 2
+                
+                if x > centerX:
+                    angle = np.radians(17)
+                    MaxY = centerY + (x - centerX) * np.tan(angle)
+
+                
+                choice = np.random.choice( [  -3, 3, -2, 2, -1, 1] )
+                while not  y + choice < centerY and y + choice > MaxY:
+                    choice = np.random.choice( [ -3, 3, -2, 2, -1, 1] )
+            
+                y += choice
+                
+
+                change = ( MaxY - y )
+                x2 = x
+                y2 = MaxY + change
+                
+            else:
+                break
+        
+        XArray.append(x)
+        YArray.append(y)
+        Arrays = The6Spikes(centerX, centerY, x, y, XArray, YArray )
+        
+        XArray = Arrays[0]
+        YArray = Arrays[1]
+        
+        XArray.append(x2)
+        YArray.append(y2)
+        Arrays = The6Spikes(centerX, centerY, x2, y2, XArray, YArray )
+        
+        XArray = Arrays[0]
+        YArray = Arrays[1]
+
+        for i in range(len(XArray)):
+            pygame.draw.circle(screen,   particle_color , (XArray[i], YArray[i]), particle_size)
+            
+        pygame.display.flip()
+        clock.tick(360)
+
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                
+            
+        pygame.display.flip()
+        clock.tick(60)
+                
+
+    pygame.quit()
+
+
 
 
 def main():
@@ -313,7 +436,7 @@ def main():
     # Screen dimensions
     width, height = 1366, 768
     screen = pygame.display.set_mode((width, height))
-    pygame.display.set_caption('Epicycloid Wallpaper')
+    pygame.display.set_caption('Wallpaper')
 
     
     draw_epicycloid(screen, width, height)
@@ -325,6 +448,14 @@ def main():
     playTime = 10
 
     koch_snowflake(screen, playTime, InitialLength, TotalIterations, massage )
+    
+
+    particle_size = 3
+    background_color = (25, 25, 55)
+    particle_color = (67, 215, 172)
+    total_particles = 450
+
+    draw_particles(screen, width, height, particle_size, background_color, particle_color, total_particles)
 
     pygame.quit()
     sys.exit()
